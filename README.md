@@ -1,6 +1,6 @@
 This is a mirror of http://www.vim.org/scripts/script.php?script_id=1785
 
-This is javacomplete, an omni-completion script of JAVA language for vim 7.
+This is javacomplete, an omni-completion script of JAVA language for vim 7 optimized for Android development.
 
 It includes javacomplete.vim, java_parser.vim, Reflection.java, and 
 javacomplete.txt
@@ -22,7 +22,10 @@ Requirements:
 It works on all the platforms where
 - Vim version 7.0 and above
 - JDK version 1.1 and above
-existed 
+- Set `$ANDROID_JAR` variable in your `.vimrc` pointing to your `android.jar`
+- Create a `.javacomplete` file in your project root, and write in the path to your library jars (one jar each line) e.g.
+> libs/android-support-v4.jar
+> libs/gson-2.2.2.jar
 
 Input context:
 It recognize nearly all kinds of Primary Expressions (see langspec-3.0)
