@@ -14,6 +14,8 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 class Reflection {
     static final String VERSION	= "0.77";
@@ -49,25 +51,34 @@ class Reflection {
 
     static Hashtable htClasspath = new Hashtable();
 
+	static URLClassLoader loader;
+
     public static boolean existed(String fqn) {
-	boolean result = false;
-	try {
-	    Class.forName(fqn);
-	    result = true;
-	}
-	catch (Exception ex) {
-	}
-	return result;
+		boolean result = false;
+
+		collectClassPath();
+
+		try {
+			loader.loadClass(fqn);
+			result = true;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		return result;
     }
 
     public static String existedAndRead(String fqns) {
+	collectClassPath();
+	
 	Hashtable mapPackages = new Hashtable();	// qualified name --> StringBuffer
 	Hashtable mapClasses = new Hashtable();		// qualified name --> StringBuffer
 
 	for (StringTokenizer st = new StringTokenizer(fqns, ","); st.hasMoreTokens(); ) {
 	    String fqn = st.nextToken();
+
 	    try {
-		Class clazz = Class.forName(fqn);
+		Class clazz = loader.loadClass(fqn);
 		putClassInfo(mapClasses, clazz);
 	    }
 	    catch (Exception ex) {
@@ -79,7 +90,7 @@ class Reflection {
 			if (lastDotPos == -1)
 			    break;
 			binaryName = binaryName.substring(0, lastDotPos) + '$' + binaryName.substring(lastDotPos+1, binaryName.length());
-			Class clazz = Class.forName(binaryName);
+			Class clazz = loader.loadClass(binaryName);
 			putClassInfo(mapClasses, clazz);
 			found = true;
 			break;
@@ -176,32 +187,51 @@ class Reflection {
 	}
 
 	// javacomplete config file
-	File f = new File(System.getProperty("cur.file")).getParentFile();;
-	for (int i = 0; i <= 10; i++) {
-		File f2 = new File(f.getPath() + "/.javacomplete");
-		if (f2.exists()) {
-			try {
-				DataInputStream in = new DataInputStream(new FileInputStream(f2));
-				String line;
-				while ((line = in.readLine()) != null) {
-					htClasspath.put(f.getPath() + "/" + line, "");
+	String cur = System.getProperty("cur.file");
+	if (cur != null) {
+		File f = new File(cur).getParentFile();;
+		for (int i = 0; i <= 10; i++) {
+			File f2 = new File(f.getPath() + "/.javacomplete");
+			if (f2.exists()) {
+				try {
+					DataInputStream in = new DataInputStream(new FileInputStream(f2));
+					String line;
+					while ((line = in.readLine()) != null) {
+						htClasspath.put(f.getPath() + "/" + line, "");
 
-				}
-			} catch (IOException e) {
+					}
+				} catch (IOException e) {
 				
+				}
+				break;
 			}
-			break;
-		}
 
-		f = f.getParentFile();
+			f = f.getParentFile();
 
-		if (f == null) {
+			if (f == null) {
 			break;
+			}
 		}
 	}
 
+	loadAllClasses();
+
 	return htClasspath;
     }
+
+	private static void loadAllClasses() {
+		ArrayList<URL> urls = new ArrayList<URL>();
+		for (Object key : htClasspath.keySet()) {
+			try {
+				urls.add(new File(key.toString()).toURL());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		URL[] urlArray = new URL[urls.size()];
+		loader = new URLClassLoader(urls.toArray(urlArray));
+	}
 
     private static void addClasspathesFromDir(String dirpath) {
 	File dir = new File(dirpath);
