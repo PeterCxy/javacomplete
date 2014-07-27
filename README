@@ -24,8 +24,8 @@ It works on all the platforms where
 - JDK version 1.1 and above
 - Set `$ANDROID_JAR` variable in your `.vimrc` pointing to your `android.jar`
 - Create a `.javacomplete` file in your project root, and write in the path to your library jars (one jar each line) e.g.
-> libs/android-support-v4.jar
-> libs/gson-2.2.2.jar
+    libs/android-support-v4.jar
+    libs/gson-2.2.2.jar
 
 Input context:
 It recognize nearly all kinds of Primary Expressions (see langspec-3.0)
