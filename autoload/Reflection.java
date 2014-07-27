@@ -398,9 +398,11 @@ class Reflection {
 
 
 	public static String getClassInfo(String className) {
+		collectClassPath();
+
 		Hashtable mapClasses = new Hashtable();
 		try {
-			Class clazz = Class.forName(className);
+			Class clazz = loader.loadClass(className);
 			putClassInfo(mapClasses, clazz);
 		} catch (Exception ex) {
 		}
