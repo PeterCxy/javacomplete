@@ -182,8 +182,8 @@ class Reflection {
 		// javacomplete config file
 		String cur = System.getProperty("cur.file");
 		if (cur != null) {
-			File f = new File(cur).getParentFile();;
-			for (int i = 0; i <= 10; i++) {
+			File f = new File(cur).getParentFile();
+			for (int i = 1; i <= 15; i++) {
 				File f2 = new File(f.getPath() + "/.javacomplete");
 				if (f2.exists()) {
 					try {
@@ -200,7 +200,8 @@ class Reflection {
 
 				f = f.getParentFile();
 
-				if (f == null) {
+				// Break the loop if we have arrived root directory
+				if (f == null || f.getAbsolutePath().trim().equals("/")) {
 					break;
 				}
 			}
