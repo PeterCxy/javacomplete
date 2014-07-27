@@ -62,7 +62,7 @@ class Reflection {
 			loader.loadClass(fqn);
 			result = true;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			
 		}
 
 		return result;
@@ -225,7 +225,7 @@ class Reflection {
 			try {
 				urls.add(new File(key.toString()).toURL());
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				
 			}
 		}
 
