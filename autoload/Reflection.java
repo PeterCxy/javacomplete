@@ -169,6 +169,12 @@ class Reflection {
 	    }
 	}
 
+	// android.jar
+	String androidJarPath = System.getProperty("android.jar");
+	if (androidJarPath != null && !androidJarPath.trim().equals("")) {
+		htClasspath.put(androidJarPath, "");
+	}
+
 	return htClasspath;
     }
 
