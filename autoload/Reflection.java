@@ -175,6 +175,31 @@ class Reflection {
 		htClasspath.put(androidJarPath, "");
 	}
 
+	// javacomplete config file
+	File f = new File(System.getProperty("cur.file")).getParentFile();;
+	for (int i = 0; i <= 10; i++) {
+		File f2 = new File(f.getPath() + "/.javacomplete");
+		if (f2.exists()) {
+			try {
+				DataInputStream in = new DataInputStream(new FileInputStream(f2));
+				String line;
+				while ((line = in.readLine()) != null) {
+					htClasspath.put(f.getPath() + "/" + line, "");
+
+				}
+			} catch (IOException e) {
+				
+			}
+			break;
+		}
+
+		f = f.getParentFile();
+
+		if (f == null) {
+			break;
+		}
+	}
+
 	return htClasspath;
     }
 

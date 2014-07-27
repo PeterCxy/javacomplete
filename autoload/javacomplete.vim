@@ -2169,8 +2169,7 @@ fu! s:RunReflection(option, args, log)
   if !exists('s:isjdk11')
     let classpath = ' -classpath "' . s:GetClassPath() . '"'
   endif
-
-  let cmd = javacomplete#GetJVMLauncher() . classpath . ' -Dandroid.jar=' . $ANDROID_JAR . ' Reflection ' . a:option . ' "' . a:args . '"'
+  let cmd = javacomplete#GetJVMLauncher() . classpath . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' "' . a:args . '"'
   return s:System(cmd, a:log)
 endfu
 " class information							{{{2
