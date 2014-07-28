@@ -11,12 +11,13 @@
  * 
  */
 
+import android.os.Environment;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.lang.ClassLoader;
+import dalvik.system.DexClassLoader;
 
 class Reflection {
 	static final String VERSION	= "0.77";
@@ -52,7 +53,7 @@ class Reflection {
 
 	static Hashtable htClasspath = new Hashtable();
 
-	static URLClassLoader loader;
+	static DexClassLoader loader;
 
 	public static boolean existed(String fqn) {
 		boolean result = false;
@@ -213,17 +214,21 @@ class Reflection {
 	}
 
 	private static void loadAllClasses() {
-		ArrayList<URL> urls = new ArrayList<URL>();
+		StringBuilder builder = new StringBuilder();
 		for (Object key : htClasspath.keySet()) {
 			try {
-				urls.add(new File(key.toString()).toURL());
+				File dex = new File(key.toString().replace(".jar", ".dex.jar"));
+				if (dex.exists()) {
+					builder.append(dex.getAbsolutePath());
+				}
+
+				builder.append(":");
 			} catch (Exception e) {
 				
 			}
 		}
 
-		URL[] urlArray = new URL[urls.size()];
-		loader = new URLClassLoader(urls.toArray(urlArray));
+		loader = new DexClassLoader(builder.toString(), Environment.getExternalStorageDirectory().toString(), null, ClassLoader.getSystemClassLoader());
 	}
 
 	private static void addClasspathesFromDir(String dirpath) {
