@@ -47,6 +47,12 @@ class Reflection {
 	static final String KEY_DESCRIPTION		= "'d':";	// "'description':";
 	static final String KEY_DECLARING_CLASS	= "'c':";	// "'declaringclass':";
 
+	static final String CACHE_CLASS_INFO		= "class_info";
+	static final String CACHE_PACKAGE_INFO		= "package_info";
+	static final String CACHE_EXISTED_AND_READ	= "existed_and_read";
+	static final String CACHE_EXISTED			= "existed";
+	static final String CACHE_PACKAGE_CONTENT	= "package_content";
+
 	static final String NEWLINE = "";	// "\r\n"
 
 	static boolean debug_mode = false;
@@ -58,21 +64,36 @@ class Reflection {
 	public static boolean existed(String fqn) {
 		boolean result = false;
 
+		String cache = readCache(CACHE_EXISTED, fqn);
+		
+		if (!isBlank(cache)) {
+			return Boolean.parseBoolean(cache);
+		}
+
 		collectClassPath();
 
 		try {
 			loader.loadClass(fqn);
 			result = true;
 		} catch (Exception e) {
-			
+			return false;
 		}
+
+		writeCache(CACHE_EXISTED, fqn, String.valueOf(result));
 
 		return result;
 	}
 
 	public static String existedAndRead(String fqns) {
+		
+		String cache = readCache(CACHE_EXISTED_AND_READ, fqns);
+
+		if (!isBlank(cache)) {
+			return cache;
+		}
+
 		collectClassPath();
-	
+
 		Hashtable mapPackages = new Hashtable();	// qualified name --> StringBuffer
 		Hashtable mapClasses = new Hashtable();		// qualified name --> StringBuffer
 
@@ -114,15 +135,30 @@ class Reflection {
 				sb.append("'").append( s.replace('$', '.') ).append("':").append(mapClasses.get(s)).append(",");
 			}
 			sb.append("}");
-			return sb.toString();
+			String ret = sb.toString();
+
+			writeCache(CACHE_EXISTED_AND_READ, fqns, ret);
+
+			return ret;
 		} else
 			return "";
 		}
 
 	private static String getPackageList(String fqn) {
+
+		String cache = readCache(CACHE_PACKAGE_INFO, fqn);
+
+		if (!isBlank(cache)) {
+			return cache;
+		}
+
 		Hashtable mapPackages = new Hashtable();
 		putPackageInfo(mapPackages, fqn);
-		return mapPackages.size() > 0 ? mapPackages.get(fqn).toString() : "";
+		String ret = mapPackages.size() > 0 ? mapPackages.get(fqn).toString() : "";
+
+		writeCache(CACHE_PACKAGE_INFO, fqn, ret);
+
+		return ret;
 	}
 
 	private static Hashtable collectClassPath() {
@@ -404,6 +440,13 @@ class Reflection {
 
 
 	public static String getClassInfo(String className) {
+
+		String cache = readCache(CACHE_CLASS_INFO, className);
+
+		if (!isBlank(cache)) {
+			return cache;
+		}
+
 		collectClassPath();
 
 		Hashtable mapClasses = new Hashtable();
@@ -423,7 +466,11 @@ class Reflection {
 				sb.append(mapClasses.get(s)).append(",");
 			}
 			sb.append("]");
-			return sb.toString();				// return [...]
+			String ret = sb.toString();				// return [...]
+
+			writeCache(CACHE_CLASS_INFO, className, ret);
+
+			return ret;
 		} else
 			return "";
 		}
@@ -608,6 +655,51 @@ class Reflection {
 			if ((Character.isWhitespace(str.charAt(i)) == false))
 				return false;
 		return true;
+	}
+
+	private static String readCache(String type, String className) {
+		String fileName = System.getProperty("javacomplete.cache") + "/" + className + "." + type;
+		File f = new File(fileName);
+
+		if (f.exists()) {
+			try {
+				InputStreamReader reader = new InputStreamReader(new FileInputStream(fileName));
+				StringBuilder str = new StringBuilder();
+				int oneChar;
+				while ((oneChar = reader.read()) != -1) {
+					str.append((char) oneChar);
+				}
+				reader.close();
+				return str.toString().trim();
+			} catch (Exception e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private static void writeCache(String type, String className, String content) {
+		String fileName = System.getProperty("javacomplete.cache") + "/" + className + "." + type;
+		File f = new File(fileName);
+
+		// Override the file
+		if (f.exists()) {
+			f.delete();
+		}
+
+		try {
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+			FileOutputStream opt = new FileOutputStream(fileName);
+			byte[] bytes = content.getBytes();
+			opt.write(bytes);
+			opt.flush();
+			opt.close();
+		} catch (Exception e) {
+
+		}
+
 	}
 
 	// test methods
