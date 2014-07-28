@@ -1754,30 +1754,30 @@ fu! s:GetJavaCompleteClassPath()
     let has_class = 1
   endif
 
-  let classfile = globpath(&rtp, 'autoload/Reflection.class')
-  if classfile == ''
-    let classfile = globpath($HOME, 'Reflection.class')
-  endif
-  if classfile == ''
+  let classfile = globpath(&rtp, 'autoload/Reflection.jar')
+  "if classfile == ''
+    "let classfile = globpath($HOME, 'Reflection.class')
+  "endif
+  "if classfile == ''
     " try to find source file and compile to $HOME
-    let srcfile = globpath(&rtp, 'autoload/Reflection.java')
-    if srcfile != ''
-      exe '!' . javacomplete#GetCompiler() . ' -d "' . $HOME . '" "' . srcfile . '"'
-      let classfile = globpath($HOME, 'Reflection.class')
-      if classfile == ''
-        echo srcfile . ' can not be compiled. Please check it'
-      endif
-    else
-      echo 'No Reflection.class found in $HOME or any autoload directory of the &rtp. And no Reflection.java found in any autoload directory of the &rtp to compile.'
-    endif
-  endif
+    "let srcfile = globpath(&rtp, 'autoload/Reflection.java')
+    "if srcfile != ''
+      "exe '!' . javacomplete#GetCompiler() . ' -d "' . $HOME . '" "' . srcfile . '"'
+      "let classfile = globpath($HOME, 'Reflection.class')
+      "if classfile == ''
+        "echo srcfile . ' can not be compiled. Please check it'
+      "endif
+    "else
+      "echo 'No Reflection.class found in $HOME or any autoload directory of the &rtp. And no Reflection.java found in any autoload directory of the &rtp to compile.'
+    "endif
+  "endif
 
   " add *.class to wildignore if it existed before
-  if has_class == 1
-    set wildignore+=*.class
-  endif
+  "if has_class == 1
+    "set wildignore+=*.class
+  "endif
 
-  return fnamemodify(classfile, ':p:h')
+  return classfile
 endfu
 
 fu! s:GetClassPathOfJsp()
@@ -2165,11 +2165,8 @@ endfu
 
 " Function to run Reflection						{{{2
 fu! s:RunReflection(option, args, log)
-  let classpath = ''
-  if !exists('s:isjdk11')
-    let classpath = ' -classpath "' . s:GetClassPath() . '"'
-  endif
-  let cmd = javacomplete#GetJVMLauncher() . classpath . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' "' . a:args . '"'
+  let classpath = ' -cp ' . s:GetClassPath()
+  let cmd = 'dalvikvm ' . classpath . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' "' . a:args . '"'
   return s:System(cmd, a:log)
 endfu
 " class information							{{{2
