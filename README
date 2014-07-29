@@ -36,7 +36,7 @@ It works on all the platforms where
     libs/gson-2.2.2.jar
 - Use `dx --dex` command to dex both your `android.jar` and library jars, then rename the dexed jar to `*.dex.jar`, e.g.
     dx --dex --output=android-support-v4.dex.jar android-support-v4.jar
-	dx --dex --core-library --output=android.dex.ar android.jar
+	dx --dex --core-library --output=android.dex.jar android.jar
   NOTE: The dexed jar should be in the same directory as the original jar. You do not need to change `$ANDROID_JAR` and `.javacomplete`, the plugin will detect the dexed jar automatically. And DO NOT DELETE THE ORIGINAL JAR!!!
 - NOTE: THIS VERSION WHICH RUNS ON DALVIK / ART REQUIRES ROOT ACCESS
 
