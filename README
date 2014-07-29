@@ -17,6 +17,11 @@ Features:
 - JSP is supported, Builtin objects such as request, session can be recognized.
   The classes and jar files in the WEB-INF will be appended automatically to classpath.
 
+Preparation:
+- Use `javac` to complie autoload/Reflection.java to Reflection.class (Do not forget to set classpath to your android.jar when running `javac`)
+- Run `dx` to dex your Reflection.class to Reflection.jar (The `dx` tool is in your Android SDK, you can find more information on Google)
+- Copy the two `.vim` files and the `Reflection.jar` to your vim autoload directory.
+- Note: If you are using VimTouch, here is my modification of VimTouchFullRuntime which includes javacomplete plugin: https://github.com/PeterCxy/vimtouch_fullruntime
 
 Requirements:
 It works on all the platforms where
