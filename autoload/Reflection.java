@@ -264,7 +264,7 @@ class Reflection {
 			}
 		}
 
-		loader = new DexClassLoader(builder.toString(), Environment.getExternalStorageDirectory().toString(), null, ClassLoader.getSystemClassLoader());
+		loader = new DexClassLoader(builder.toString(), System.getProperty("javacomplete.cache"), null, ClassLoader.getSystemClassLoader());
 	}
 
 	private static void addClasspathesFromDir(String dirpath) {

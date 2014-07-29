@@ -23,8 +23,9 @@ It works on all the platforms where
 - Vim version 7.0 and above
 - JDK version 1.1 and above
 - Set `$ANDROID_JAR` variable in your `.vimrc` pointing to your `android.jar`
-- Set `$JAVACOMPLETE_CACHE` variable in your `.vimrc` pointing to a directory for putting cache files.
+- Set `$JAVACOMPLETE_CACHE` variable in your `.vimrc` pointing to a directory for putting cache files and make sure the directory EXISTS.
     NOTE: If you met any problems with package parsing, you can try deleting the cache directory you set.
+- Set `$JAVACOMPLETE_USER` variable in your `.vimrc` with the owner user name of `$JAVACOMPLETE_CACHE`. If you set `$JAVACOMPLETE_CACHE` to a directory on sdcard, the owner user is usually `system` or `root`. This is very IMPORTANT because javacomplete needs the permission to manage the cache directory.
 - Create a `.javacomplete` file in your project root, and write in the path to your library jars (one jar each line) e.g.
     libs/android-support-v4.jar
     libs/gson-2.2.2.jar

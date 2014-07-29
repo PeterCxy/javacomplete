@@ -2166,7 +2166,7 @@ endfu
 " Function to run Reflection						{{{2
 fu! s:RunReflection(option, args, log)
   let classpath = ' -cp ' . s:GetClassPath()
-  let cmd = 'su -c "dalvikvm ' . classpath . ' -Djavacomplete.cache=' . $JAVACOMPLETE_CACHE . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' ' . a:args . '"'
+  let cmd = 'su -c "dalvikvm ' . classpath . ' -Djavacomplete.cache=' . $JAVACOMPLETE_CACHE . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' ' . a:args . '" ' . $JAVACOMPLETE_USER
   return s:System(cmd, a:log)
 endfu
 " class information							{{{2
