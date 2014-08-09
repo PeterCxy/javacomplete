@@ -1727,16 +1727,16 @@ fu! javacomplete#SetClassPath(s)
 endfu
 
 fu! javacomplete#GetClassPathSep()
-  return ''
+  return s:PATH_SEP
 endfu
 
 fu! javacomplete#GetClassPath()
-  return exists('s:classpath') ? s:classpath : ''
+  return exists('s:classpath') ? join(s:classpath, javacomplete#GetClassPathSep()) : ''
 endfu
 
 " s:GetClassPath()							{{{2
 fu! s:GetClassPath()
-  let path = s:GetJavaCompleteClassPath()
+  let path = s:GetJavaCompleteClassPath() . javacomplete#GetClassPathSep()
 
   if &ft == 'jsp'
     let path .= s:GetClassPathOfJsp()
@@ -1754,7 +1754,7 @@ fu! s:GetClassPath()
     return path . g:java_classpath
   endif
 
-  return path
+  return path . $CLASSPATH
 endfu
 
 fu! s:GetJavaCompleteClassPath()
@@ -2178,7 +2178,7 @@ endfu
 " Function to run Reflection						{{{2
 fu! s:RunReflection(option, args, log)
   let classpath = ' -cp ' . s:GetClassPath()
-  let cmd = 'su ' . $JAVACOMPLETE_USER . ' -c "dalvikvm ' . classpath . ' -Djavacomplete.cache=' . $JAVACOMPLETE_CACHE . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' ' . a:args . '"'
+  let cmd = 'su -c "dalvikvm ' . classpath . ' -Djavacomplete.cache=' . $JAVACOMPLETE_CACHE . ' -Dandroid.jar=' . $ANDROID_JAR . ' -Dcur.file=' . expand('%') . ' Reflection ' . a:option . ' ' . a:args . '" ' . $JAVACOMPLETE_USER
   return s:System(cmd, a:log)
 endfu
 " class information							{{{2
