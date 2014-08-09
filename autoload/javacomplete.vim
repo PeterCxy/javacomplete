@@ -1668,10 +1668,22 @@ fu! s:GetSourceDirs(filepath, ...)
     " get source path according to file path and package name
     let packageName = a:0 > 0 ? a:1 : s:GetPackageName()
     if packageName != ''
-      let path = fnamemodify(substitute(filepath, packageName, '', 'g'), ':p:h')
-      if index(dirs, path) < 0
-	call add(dirs, path)
+      let dirpath = simplify(fnamemodify(substitute(filepath, packageName, '', 'g'), ':p:h') . "/../")
+      let cfgpath = dirpath . ".javacomplete"
+
+      if filereadable(cfgpath)
+        let paths = readfile(cfgpath)
+
+        for path in paths
+          if match(path, '\.jar$') < 0
+            let fullPath = dirpath . path
+            if index(dirs, fullPath) < 0
+              call add(dirs, fullPath)
+            endif
+          endif
+        endfor
       endif
+      "endif
     endif
 
     " Consider current path as a sourcepath
